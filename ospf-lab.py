@@ -156,7 +156,7 @@ class OSPFLab(Topo):
 
 		# Add links between backbone routers		
 		self.addLink(R1,R2, intfName1="eth1", intfName2="eth1")
-		self.addLink(R1,R3, intfName1="eth2", intfName="eth1")
+		self.addLink(R1,R3, intfName1="eth2", intfName2="eth1")
 		self.addLink(R2,R3, intfName1="eth2", intfName2="eth2")
 		
 		confdir = Path(config_path % {"name": ""})
