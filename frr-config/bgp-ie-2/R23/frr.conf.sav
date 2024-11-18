@@ -1,0 +1,49 @@
+frr version 8.5.6
+frr defaults traditional
+hostname R23
+service integrated-vtysh-config
+!
+interface lo
+ ip address 10.20.100.3/32
+ ip ospf area 0
+exit
+!
+interface port_21
+ ip address 10.20.1.10/30
+ ip ospf area 0
+exit
+!
+interface port_24
+ ip address 10.20.1.13/30
+ ip ospf area 0
+exit
+!
+interface port_ext_300
+ ip address 10.0.0.9/30
+exit
+!
+router bgp 200
+ no bgp ebgp-requires-policy
+ no bgp hard-administrative-reset
+ no bgp graceful-restart notification
+ neighbor 10.0.0.10 remote-as 300
+ neighbor 10.20.100.1 remote-as 200
+ neighbor 10.20.100.1 update-source lo
+ neighbor 10.20.100.2 remote-as 200
+ neighbor 10.20.100.2 update-source lo
+ neighbor 10.20.100.4 remote-as 200
+ neighbor 10.20.100.4 update-source lo
+ !
+ address-family ipv4 unicast
+  network 10.20.0.0/24
+  neighbor 10.20.100.1 next-hop-self
+  neighbor 10.20.100.2 next-hop-self
+  neighbor 10.20.100.4 next-hop-self
+ exit-address-family
+exit
+!
+router ospf
+ ospf router-id 10.20.100.3
+ default-information originate always
+exit
+!

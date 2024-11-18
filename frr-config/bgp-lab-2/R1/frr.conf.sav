@@ -1,0 +1,54 @@
+frr version 8.1
+frr defaults traditional
+hostname R1
+domainname 
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+ip route 172.16.0.0/23 Null0
+!
+interface eth0
+ ip address 10.11.1.1/24
+ ip ospf area 0
+exit
+!
+interface eth1
+ ip address 10.10.1.1/30
+exit
+!
+interface eth2
+ ip address 10.10.2.1/30
+exit
+!
+router bgp 100
+ no bgp ebgp-requires-policy
+ neighbor 10.10.1.2 remote-as 200
+ neighbor 10.10.2.2 remote-as 300
+ !
+ address-family ipv4 unicast
+  network 10.11.1.0/24
+  network 172.16.0.0/23
+  neighbor 10.10.1.2 route-map IMPORT_PREFIX_23 in
+  neighbor 10.10.1.2 route-map EXPORT_OWN_PREFIX out
+  neighbor 10.10.2.2 route-map IMPORT_PREFIX_23 in
+  neighbor 10.10.2.2 route-map EXPORT_OWN_PREFIX out
+ exit-address-family
+exit
+!
+router ospf
+ ospf router-id 10.11.1.1
+ default-information originate always
+exit
+!
+ip prefix-list PREFIX_23 seq 10 permit 0.0.0.0/0 ge 23 le 23
+ip prefix-list OWN_PREFIX seq 10 permit 10.11.1.0/24
+ip prefix-list OWN_PREFIX seq 20 permit 172.16.0.0/23
+!
+route-map IMPORT_PREFIX_23 permit 10
+ match ip address prefix-list PREFIX_23
+exit
+!
+route-map EXPORT_OWN_PREFIX permit 10
+ match ip address prefix-list OWN_PREFIX
+exit
+!

@@ -1,0 +1,49 @@
+frr version 8.5.6
+frr defaults traditional
+hostname R11
+service integrated-vtysh-config
+!
+interface lo
+ ip address 10.10.100.1/32
+ ip ospf area 0
+exit
+!
+interface port_12
+ ip address 10.10.1.2/30
+ ip ospf area 0
+exit
+!
+interface port_13
+ ip address 10.10.1.14/30
+ ip ospf area 0
+exit
+!
+interface port_ext_300
+ ip address 10.0.0.5/30
+exit
+!
+router bgp 100
+ no bgp ebgp-requires-policy
+ no bgp hard-administrative-reset
+ no bgp graceful-restart notification
+ neighbor 10.0.0.6 remote-as 300
+ neighbor 10.10.100.2 remote-as 100
+ neighbor 10.10.100.2 update-source lo
+ neighbor 10.10.100.3 remote-as 100
+ neighbor 10.10.100.3 update-source lo
+ neighbor 10.10.100.4 remote-as 100
+ neighbor 10.10.100.4 update-source lo
+ !
+ address-family ipv4 unicast
+  network 10.10.0.0/24
+  neighbor 10.10.100.2 next-hop-self
+  neighbor 10.10.100.3 next-hop-self
+  neighbor 10.10.100.4 next-hop-self
+ exit-address-family
+exit
+!
+router ospf
+ ospf router-id 10.10.100.1
+ default-information originate always
+exit
+!

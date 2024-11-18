@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 import sys
 import os
-import termcolor as T
+# import termcolor as T
 from subprocess import Popen, PIPE
 import re
 

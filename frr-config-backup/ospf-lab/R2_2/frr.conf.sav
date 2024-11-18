@@ -1,0 +1,21 @@
+frr version 8.1
+frr defaults traditional
+hostname R2_2
+domainname 
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+interface eth0
+ ip address 10.10.2.20/24
+ ip ospf area 2
+exit
+!
+interface eth1
+ ip address 172.17.2.1/24
+ ip ospf area 2
+exit
+!
+router ospf
+ ospf router-id 10.2.2.20
+exit
+!
